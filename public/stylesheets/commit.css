@@ -23,3 +23,15 @@ main {
     margin-top: auto;
     background-color: lightblue;
 }
+
+.chat-line {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.chat-image {
+    margin-right: 10px;
+    height: 25px;
+    width: 25px;
+}
