@@ -3,10 +3,13 @@
 /**
  * Module dependencies.
  */
-
+const WebSocket = require('ws');
 var app = require('../app');
 var debug = require('debug')('myapp:server');
 var http = require('http');
+const library = require("../public/javascripts/library");
+const { type } = require('os');
+const { json } = require('express');
 
 /**
  * Get port from environment and store in Express.
@@ -18,9 +21,35 @@ app.set('port', port);
 /**
  * Create HTTP server.
  */
-
+let map = new Map();
 var server = http.createServer(app);
+let wws = new WebSocket.Server({ server });
+wws.on('connection', (ws) => {
+  ws.on('message', (data) => {
+    data = JSON.parse(data);
+    switch (data[0]) {
+      case "open":
+        map.set(data[1], ws);
+        HowManyUsersOnline(map);
+        break;
+      case "close":
+        map.delete(data[1]);
+        HowManyUsersOnline(map);
+        break;
+      case "message":
+        try {
+          let userws = map.get(data[2]);
+          userws.send(JSON.stringify([data[1], data[3]]));
+        } catch (err) {
+          console.log(err);
+        }
+        break;
+      default:
+        break;
+    }
+  });
 
+})
 /**
  * Listen on provided port, on all network interfaces.
  */
@@ -87,4 +116,10 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+}
+
+function HowManyUsersOnline(map) {
+  map.forEach((value, index) => {
+    value.send(JSON.stringify("online person :" + map.size));
+  });
 }

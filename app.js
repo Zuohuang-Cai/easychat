@@ -11,7 +11,6 @@ var apisRouter = require('./routes/api');
 const session = require('express-session');
 const components = require('./components');
 var app = express();
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');

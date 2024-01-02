@@ -5,6 +5,11 @@ function getmysqldate() {
     let day = String(currentDate.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
+function parseUserIdFromMessage(req) {
+    return req.params.id;
+}
+
 module.exports = {
-    getmysqldate
+    getmysqldate,
+    parseUserIdFromMessage,
 }

@@ -26,6 +26,7 @@ class person {
             req.session.user_id = rows[0].id;
             res.cookie('name', rows[0].name);
             res.cookie('img', rows[0].img);
+            res.cookie('id',rows[0].id)
             res.redirect("/chat");
         });
     }
@@ -45,7 +46,18 @@ class person {
                 res.send(err);
                 return;
             }
-            res.end();
+            res.redirect("/chat");
+        })
+    }
+    editfoto(img, id, res) {
+        this.pool.query("UPDATE users SET img = ? WHERE id = ?;", [img, id], function (err, rows, fields) {
+            if (err) {
+                res.send(err);
+                return;
+            }
+            res.clearCookie('img');
+            res.cookie('img', img, { maxAge: 24 * 60 * 60 * 1000 });
+            res.redirect("/chat");
         })
     }
 }

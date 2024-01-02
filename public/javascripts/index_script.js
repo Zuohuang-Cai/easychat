@@ -33,7 +33,7 @@ class user {
         }
         return null;
     }
-
+    
     generateFriendElement(name, imgsrc) {
         if (imgsrc == null) {
             imgsrc = "https://vfk-iserlohn.de/wp-content/uploads/2016/07/vfk-iserlohn-kein-profilbild-neu.jpg"
@@ -52,4 +52,4 @@ class user {
     }
 }
 
-new user()
+let a_user = new user();
