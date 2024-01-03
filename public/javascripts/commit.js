@@ -1,11 +1,8 @@
 class WebSocketClient {
     constructor(ChatTo) {
         this.ChatTo = ChatTo;
-        this.setupWebSocket();
-        this.refreshpage();
-
+        // dont use setupwebsocket() in constructor , that wil make you misfortune!!!!!
     }
-
     setupWebSocket() {
         this.commithtml = document.querySelector("#commithtml");
         this.name = this.getCookie("name");
@@ -17,15 +14,15 @@ class WebSocketClient {
         this.ws = new WebSocket('ws://localhost:8080');
         this.ws.onopen = () => {
             console.log('WebSocket connected');
+            console.log(this.ChatTo);
             this.ws.send(JSON.stringify(["open", this.id]));
         };
         this.ws.onclose = () => {
             console.log('WebSocket closed');
-            this.ws.send(JSON.stringify(["close", this.id]));
         };
         this.ws.onmessage = (event) => {
             let parseddata = JSON.parse(event.data);
-            this.StoreData(parseddata[3], parseddata[1]);
+            this.StoreData(parseddata[3], parseddata[1],parseddata[2]);
             this.newParagraph(`${parseddata[0]} ${parseddata[1]}`, parseddata[2]);
 
         };
@@ -43,8 +40,9 @@ class WebSocketClient {
         });
     }
 
-    StoreData(id, text) {
+    StoreData(id, text,img) {
         let chathistories = JSON.parse(localStorage.getItem(JSON.stringify(id))) || [];
+        console.log(chathistories);
         let newdata = { "name": this.name, "text": text, "img": this.img };
         chathistories.push(newdata);
         localStorage.setItem(JSON.stringify(id), JSON.stringify(chathistories));
@@ -82,6 +80,8 @@ class WebSocketClient {
     }
 
     closeconnection() {
+        console.log(this.ChatTo, "close");
+        this.ws.send(JSON.stringify(["close", this.id]));
         this.ws.close();
         this.iframeDocument.querySelector("#button-addon1").removeEventListener("click", () => { });
         this.commithtml = null;

@@ -4,7 +4,7 @@ class user {
         this.frindslist = document.querySelector('#friendList');
         this.fetchFriends()
             .then((array) => { array.forEach(element => this.frindslist.appendChild(this.generateFriendElement(element.name, element.img, element.id))); return array })
-            .then((array) => { this.selectbutton(); this.connections = new WebSocketClient(array[0].id) });
+            .then((array) => { this.selectbutton(); this.connections = new WebSocketClient(array[0].id),this.connections.setupWebSocket(),this.connections.refreshpage() });
         this.Generateself(decodeURIComponent(this.getCookie('name')), decodeURIComponent(this.getCookie('img')));
     }
     Generateself(name, img) {
@@ -55,8 +55,11 @@ class user {
         const img = clone.querySelector('img');
         const span = clone.querySelector('span');
         button.addEventListener('click', () => {
+            console.log(id);
             this.connections.closeconnection();
             this.connections = new WebSocketClient(id);
+            this.connections.setupWebSocket();
+            this.connections.refreshpage();
         });
         img.src = imgsrc;
         span.textContent = name;
