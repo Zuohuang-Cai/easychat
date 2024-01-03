@@ -1,33 +1,35 @@
-
 class WebSocketClient {
-    constructor(commithtml) {
-        this.name = this.getCookie("name")
-        this.img = this.getCookie("img")
-        this.id = this.getCookie("id");
-        this.iframeDocument = commithtml.contentDocument || commithtml.contentWindow.document;
-        commithtml.onload = () => {
-            this.ws = new WebSocket('ws://localhost:8080');
-            this.setupWebSocket();
-            this.iframeDocument.querySelector("#button-addon1").addEventListener("click", () => {
-                let text = client.iframeDocument.querySelector("#textbalk").value;
-                client.sendMessage(2, text);//person who wil recived
-            })
-        }
+    constructor(ChatTo) {
+        this.ChatTo = ChatTo;
+        this.setupWebSocket();
     }
+
     setupWebSocket() {
+        this.commithtml = document.querySelector("#commithtml");
+        this.name = this.getCookie("name");
+        this.img = this.getCookie("img");
+        this.id = parseInt(this.getCookie("id"));
+
+        this.iframeDocument = this.commithtml.contentDocument || this.commithtml.contentWindow.document;
+
+        this.ws = new WebSocket('ws://localhost:8080');
         this.ws.onopen = () => {
             console.log('WebSocket connected');
-            this.ws.send(JSON.stringify(["open", parseInt(this.getCookie("id"))]));
+            this.ws.send(JSON.stringify(["open", this.id]));
         };
-
         this.ws.onclose = () => {
             console.log('WebSocket closed');
-            this.ws.send(JSON.stringify(["close", parseInt(this.getCookie("id"))]));
+            this.ws.send(JSON.stringify(["close", this.id]));
         };
-
         this.ws.onmessage = (event) => {
-            this.newParagraph(`${JSON.parse(event.data)[0]} ${JSON.parse(event.data)[1]}`, JSON.parse(event.data)[2])
+            this.newParagraph(`${JSON.parse(event.data)[0]} ${JSON.parse(event.data)[1]}`, JSON.parse(event.data)[2]);
+
         };
+        this.iframeDocument.querySelector("#button-addon1").addEventListener("click", () => {
+            let text = this.iframeDocument.querySelector("#textbalk").value;
+            console.log(this.ChatTo);
+            this.sendMessage(this.ChatTo, text); //send to ...
+        });
     }
     // newParagraph(text) {
     //     const line = "<div></div>";
@@ -44,7 +46,8 @@ class WebSocketClient {
         line.classList.add("chat-line");
 
         const chatfoto = this.iframeDocument.createElement("img");
-        chatfoto.src = "https://wallpaperaccess.com/full/5559365.jpg";
+        chatfoto.src = img;
+        console.log(chatfoto.img);
         chatfoto.classList.add("chat-image");
 
         const newPara = this.iframeDocument.createElement("p");
@@ -56,14 +59,23 @@ class WebSocketClient {
         this.iframeDocument.querySelector("main").appendChild(line);
     }
 
-
+    closeconnection() {
+        this.ws.close();
+        this.iframeDocument.querySelector("#button-addon1").removeEventListener("click", () => {});
+        this.commithtml = null;
+        this.name = null;
+        this.img = null;
+        this.id = null;
+        this.iframeDocument = null;
+        this.ChatTo = null;
+    }
     getCookie(name) {
         const cookies = document.cookie.split(';');
         for (let i = 0; i < cookies.length; i++) {
             const cookie = cookies[i].trim();
             if (cookie.startsWith(name + '=')) {
                 const cookieValue = cookie.substring(name.length + 1);
-                return decodeURIComponent(cookieValue); // 解码 URL 编码的字符串
+                return decodeURIComponent(cookieValue);
             }
         }
         return null;
@@ -75,4 +87,5 @@ class WebSocketClient {
     }
 }
 
-const client = new WebSocketClient(document.querySelector('#commithtml'));
+export { WebSocketClient };
+// const client = new WebSocketClient(document.querySelector('#commithtml'));

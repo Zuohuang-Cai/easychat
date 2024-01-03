@@ -26,15 +26,16 @@ var server = http.createServer(app);
 let wws = new WebSocket.Server({ server });
 wws.on('connection', (ws) => {
   ws.on('message', (data) => {
+    console.log(data);
     data = JSON.parse(data);
     switch (data[0]) {
       case "open":
         map.set(data[1], ws);
-        HowManyUsersOnline(map);
+        // HowManyUsersOnline(map);              fix it when make a ui
         break;
       case "close":
         map.delete(data[1]);
-        HowManyUsersOnline(map);
+        // HowManyUsersOnline(map);
         break;
       case "message":
         try {
@@ -121,6 +122,6 @@ function onListening() {
 
 function HowManyUsersOnline(map) {
   map.forEach((value, index) => {
-    value.send(JSON.stringify(["online person :" , map.size]));
+    value.send(JSON.stringify(["online person :", map.size]));
   });
 }

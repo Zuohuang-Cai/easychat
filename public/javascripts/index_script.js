@@ -1,10 +1,12 @@
+import { WebSocketClient } from './commit.js';
 class user {
     constructor() {
         this.frindslist = document.querySelector('#friendList');
         this.fetchFriends()
             .then((array) => array.forEach(element =>
-                this.frindslist.appendChild(this.generateFriendElement(element.name, element.img))));
+                this.frindslist.appendChild(this.generateFriendElement(element.name, element.img, element.id))));
         this.Generateself(decodeURIComponent(this.getCookie('name')), decodeURIComponent(this.getCookie('img')));
+        this.connections = new WebSocketClient(parseInt(this.getCookie("id")));
     }
     Generateself(name, img) {
         if (img == "j:null") {
@@ -33,8 +35,8 @@ class user {
         }
         return null;
     }
-    
-    generateFriendElement(name, imgsrc) {
+
+    generateFriendElement(name, imgsrc, id) {
         if (imgsrc == null) {
             imgsrc = "https://vfk-iserlohn.de/wp-content/uploads/2016/07/vfk-iserlohn-kein-profilbild-neu.jpg"
         }
@@ -44,7 +46,8 @@ class user {
         const img = clone.querySelector('img');
         const span = clone.querySelector('span');
         button.addEventListener('click', () => {
-            console.log('Button clicked!');
+            this.connections.closeconnection();
+            this.connections = new WebSocketClient(id);
         });
         img.src = imgsrc;
         span.textContent = name;
@@ -52,4 +55,4 @@ class user {
     }
 }
 
-let a_user = new user();
+new user();
