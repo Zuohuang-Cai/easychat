@@ -8,6 +8,9 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    background-image: url("https://th.bing.com/th/id/OIP.euyrE-MZqbfmVCDRXEqbDAHaEo?rs=1&pid=ImgDetMain");
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 main {
@@ -34,4 +37,9 @@ main {
     margin-right: 10px;
     height: 25px;
     width: 25px;
+}
+
+#textbalk {
+    resize: none;
+    overflow: hidden;
 }

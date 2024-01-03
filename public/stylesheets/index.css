@@ -1,19 +1,27 @@
-*{
+* {
     margin: 0;
     padding: 0;
 }
-.profilfoto{
+
+.profilfoto {
     height: 40px;
     width: 40px;
     border-radius: 50%;
 }
-#chatlist{
+
+#chatlist {
     background-color: green;
 }
-.friends{
+
+.friends {
     border: none;
 }
-.friends:hover{
+
+.friends:hover {
     background-color: red;
-    cursor: pointer;
+    /* cursor: pointer; */
+}
+
+.activedfriend {
+    background-color: blue;
 }

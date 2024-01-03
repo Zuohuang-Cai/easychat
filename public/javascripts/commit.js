@@ -2,6 +2,8 @@ class WebSocketClient {
     constructor(ChatTo) {
         this.ChatTo = ChatTo;
         this.setupWebSocket();
+        this.refreshpage();
+
     }
 
     setupWebSocket() {
@@ -22,32 +24,40 @@ class WebSocketClient {
             this.ws.send(JSON.stringify(["close", this.id]));
         };
         this.ws.onmessage = (event) => {
-            this.newParagraph(`${JSON.parse(event.data)[0]} ${JSON.parse(event.data)[1]}`, JSON.parse(event.data)[2]);
+            let parseddata = JSON.parse(event.data);
+            this.StoreData(parseddata[3], parseddata[1]);
+            this.newParagraph(`${parseddata[0]} ${parseddata[1]}`, parseddata[2]);
 
         };
         this.iframeDocument.querySelector("#button-addon1").addEventListener("click", () => {
-            let text = this.iframeDocument.querySelector("#textbalk").value;
-            console.log(this.ChatTo);
-            this.sendMessage(this.ChatTo, text); //send to ...
+            let input = this.iframeDocument.querySelector("#textbalk");
+            this.StoreData(this.ChatTo, input.value);
+            this.newParagraph(`${this.name} ${input.value}`, this.img);
+            this.sendMessage(this.ChatTo, input.value);
+            input.value = '';
+        });
+        let input = this.iframeDocument.querySelector("#textbalk");
+        input.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
         });
     }
-    // newParagraph(text) {
-    //     const line = "<div></div>";
-    //     const chatfoto = this.iframeDocument.createElement("img");
-    //     chatfoto.height = "25px";
-    //     chatfoto.width = "25px";
-    //     const newParagraph = this.iframeDocument.createElement("p");
-    //     line.appendChild(chatfoto,newParagraph)
-    //     newParagraph.textContent = text;
-    //     this.iframeDocument.querySelector("main").appendChild(line);
-    // }
+
+    StoreData(id, text) {
+        let chathistories = JSON.parse(localStorage.getItem(JSON.stringify(id))) || [];
+        let newdata = { "name": this.name, "text": text, "img": this.img };
+        chathistories.push(newdata);
+        localStorage.setItem(JSON.stringify(id), JSON.stringify(chathistories));
+    }
     newParagraph(text, img) {
+        if (img == "j:null") {
+            img = "https://vfk-iserlohn.de/wp-content/uploads/2016/07/vfk-iserlohn-kein-profilbild-neu.jpg";
+        }
         const line = this.iframeDocument.createElement("div");
         line.classList.add("chat-line");
 
         const chatfoto = this.iframeDocument.createElement("img");
         chatfoto.src = img;
-        console.log(chatfoto.img);
         chatfoto.classList.add("chat-image");
 
         const newPara = this.iframeDocument.createElement("p");
@@ -59,9 +69,21 @@ class WebSocketClient {
         this.iframeDocument.querySelector("main").appendChild(line);
     }
 
+    refreshpage() {
+        let chats = this.iframeDocument.querySelector("main");
+        let footer = this.iframeDocument.querySelector("footer");
+        chats.parentNode.removeChild(chats);
+        let main = this.iframeDocument.createElement("main");
+        this.iframeDocument.body.insertBefore(main, footer);
+        let datas = JSON.parse(localStorage.getItem(JSON.stringify(this.ChatTo)));
+        datas.forEach(data => {
+            this.newParagraph(data.text, data.img);
+        });
+    }
+
     closeconnection() {
         this.ws.close();
-        this.iframeDocument.querySelector("#button-addon1").removeEventListener("click", () => {});
+        this.iframeDocument.querySelector("#button-addon1").removeEventListener("click", () => { });
         this.commithtml = null;
         this.name = null;
         this.img = null;
@@ -80,12 +102,10 @@ class WebSocketClient {
         }
         return null;
     }
-
-
     sendMessage(SendToperson, message) {
-        this.ws.send(JSON.stringify(["message", this.name, SendToperson, message, this.img]));
+        console.log(SendToperson);
+        this.ws.send(JSON.stringify(["message", this.name, SendToperson, message, this.img, this.id]));
     }
 }
 
 export { WebSocketClient };
-// const client = new WebSocketClient(document.querySelector('#commithtml'));

@@ -3,10 +3,9 @@ class user {
     constructor() {
         this.frindslist = document.querySelector('#friendList');
         this.fetchFriends()
-            .then((array) => array.forEach(element =>
-                this.frindslist.appendChild(this.generateFriendElement(element.name, element.img, element.id))));
+            .then((array) => { array.forEach(element => this.frindslist.appendChild(this.generateFriendElement(element.name, element.img, element.id))); return array })
+            .then((array) => { this.selectbutton(); this.connections = new WebSocketClient(array[0].id) });
         this.Generateself(decodeURIComponent(this.getCookie('name')), decodeURIComponent(this.getCookie('img')));
-        this.connections = new WebSocketClient(parseInt(this.getCookie("id")));
     }
     Generateself(name, img) {
         if (img == "j:null") {
@@ -36,6 +35,16 @@ class user {
         return null;
     }
 
+    selectbutton() {
+        const buttons = document.querySelectorAll(".friends");
+        buttons[0].classList.add('activedfriend');
+        buttons.forEach(element => {
+            element.addEventListener("click", (event) => {
+                buttons.forEach(button => button.classList.remove('activedfriend'));
+                event.target.classList.add('activedfriend');
+            })
+        });
+    }
     generateFriendElement(name, imgsrc, id) {
         if (imgsrc == null) {
             imgsrc = "https://vfk-iserlohn.de/wp-content/uploads/2016/07/vfk-iserlohn-kein-profilbild-neu.jpg"
@@ -55,4 +64,4 @@ class user {
     }
 }
 
-new user();
+let users = new user();
