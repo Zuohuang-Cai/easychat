@@ -8,8 +8,9 @@ Nowadays, people rely too much on images and emoticons when communicating online
 
 ## Features
 
-- ** Add random chat feature
-- ** Add scoring system
+- ** Users can change their avatar
+- ** Users can add friends
+- ** The user's information exists locally and is very secure
 
 ## Tech Stack
 
